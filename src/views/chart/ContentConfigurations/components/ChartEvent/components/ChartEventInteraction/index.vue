@@ -116,6 +116,47 @@
           暂无数据
         </n-text>
       </setting-item-box>
+      <template v-if="fnExposedPropOptions(item.interactComponentId).length">
+        <n-tag :bordered="false" type="primary"> 更新目标组件属性 </n-tag>
+        <setting-item-box name="属性">
+          <n-select
+            size="tiny"
+            v-model:value="item.interactProp.prop"
+            :options="fnExposedPropOptions(item.interactComponentId)"
+            clearable
+          ></n-select>
+        </setting-item-box>
+        
+        <setting-item-box :alone="true" :hideName="true" :itemRightStyle="{ width: '100%' }" v-if="item.interactProp.handler">
+          <modal-monaco-editor-and-show
+            v-model:modelValue="item.interactProp.handler"
+            handler-name="handler(eventData, targetPropSetter)"
+            :placeholder="item.interactProp.handler || `targetPropSetter(eventData)`"
+            :cardStyle="{ width: '294px' }"
+          ></modal-monaco-editor-and-show>
+        </setting-item-box>
+      </template>
+
+      <template v-if="fnExposedMethodOptions(item.interactComponentId).length">
+        <n-tag :bordered="false" type="primary"> 调用目标组件方法 </n-tag>
+        <setting-item-box name="方法">
+          <n-select
+            size="tiny"
+            v-model:value="item.interactMethod.method"
+            :options="fnExposedMethodOptions(item.interactComponentId)"
+            clearable
+          ></n-select>
+        </setting-item-box>
+
+        <setting-item-box :alone="true" :hideName="true" :itemRightStyle="{ width: '100%' }" v-if="item.interactMethod.handler">
+          <modal-monaco-editor-and-show
+            v-model:modelValue="item.interactMethod.handler"
+            handler-name="handler(eventData, targetMethod)"
+            :placeholder="item.interactMethod.handler || `targetMethod(eventData)`"
+            :cardStyle="{ width: '294px' }"
+          ></modal-monaco-editor-and-show>
+        </setting-item-box>
+      </template>
     </n-card>
   </n-collapse-item>
 </template>
@@ -127,15 +168,18 @@ import { SettingItemBox, SettingItem, CollapseItem } from '@/components/Pages/Ch
 import { CreateComponentType, CreateComponentGroupType, ChartFrameEnum } from '@/packages/index.d'
 import { RequestParamsTypeEnum, RequestDataTypeEnum } from '@/enums/httpEnum'
 import { InteractEventOn, COMPONENT_INTERACT_EVENT_KET } from '@/enums/eventEnum'
+import { useChartInstanceStore } from '@/store/modules/chartInstanceStore/chartInstanceStore'
 import { icon } from '@/plugins'
 import noData from '@/assets/images/canvas/noData.png'
 import { goDialog } from '@/utils'
 import { useTargetData } from '../../../hooks/useTargetData.hook'
+import type { ExposedPropType, ExposedMethodType } from '@/packages/index.d'
 
 const { CloseIcon, AddIcon, HelpOutlineIcon } = icon.ionicons5
 const { targetData, chartEditStore } = useTargetData()
 const requestParamsTypeList = [RequestParamsTypeEnum.PARAMS, RequestParamsTypeEnum.HEADER]
 
+const chartInstanceStore = useChartInstanceStore()
 // 获取组件交互事件列表
 const interactActions = computed(() => {
   const interactActions = targetData.value.interactActions
@@ -150,7 +194,24 @@ const interactActions = computed(() => {
 const option = computed(() => {
   return targetData.value.option
 })
-
+const fnExposedPropOptions = (id: string | undefined): Array<ExposedPropType> => {
+  if (!id) {
+    return []
+  }
+  const instance = chartInstanceStore.getComponentInstance(id)
+  return (instance?.exposed?.getExposedProps() || []).map((item: ExposedPropType) => 
+    ({...item, label: `${item.label} - ${item.value}`})
+  )
+}
+const fnExposedMethodOptions = (id: string | undefined): Array<ExposedMethodType> => {
+  if (!id) {
+    return []
+  }
+  const instance = chartInstanceStore.getComponentInstance(id)
+  return (instance?.exposed?.getExposedMethods() || []).map((item: ExposedMethodType) => 
+    ({...item, label: `${item.label} - ${item.value}()`})
+  )
+}
 // 绑定组件数据 request
 const fnGetRequest = (id: string | undefined, key: RequestParamsTypeEnum) => {
   if (!id) return {}
@@ -232,7 +293,9 @@ const evAddEventsFn = () => {
   targetData.value.events.interactEvents.push({
     interactOn: undefined,
     interactComponentId: undefined,
-    interactFn: {}
+    interactFn: {},
+    interactProp: {},
+    interactMethod: {}
   })
 }
 

@@ -6,6 +6,8 @@
     <size-setting :isGroup="targetData.isGroup" :chartAttr="targetData.attr"></size-setting>
     <!-- 位置 -->
     <position-setting :chartAttr="targetData.attr" :canvasConfig="chartEditStore.getEditCanvasConfig" />
+    <!-- 允许关闭 -->
+    <closeable-setting :isGroup="targetData.isGroup" :chartAttr="targetData.attr" />
     <!-- 滤镜 -->
     <styles-setting :isGroup="targetData.isGroup" :chartStyles="targetData.styles"></styles-setting>
     <!-- 自定义配置项 -->
@@ -14,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { NameSetting, PositionSetting, SizeSetting, StylesSetting } from '@/components/Pages/ChartItemSetting'
+import { NameSetting, PositionSetting, SizeSetting, StylesSetting, CloseableSetting } from '@/components/Pages/ChartItemSetting'
 import { useTargetData } from '../hooks/useTargetData.hook'
 const { targetData, chartEditStore } = useTargetData()
 </script>

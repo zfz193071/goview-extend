@@ -1,8 +1,10 @@
 import { toRefs } from 'vue'
+import cloneDeep from 'lodash/cloneDeep'
 import { isPreview } from '@/utils'
 import { CreateComponentType } from '@/packages/index.d'
 import { useChartEditStore } from '@/store/modules/chartEditStore/chartEditStore'
-
+import { useChartInstanceStore } from '@/store/modules/chartInstanceStore/chartInstanceStore'
+import type { ExposedPropType, ExposedMethodType } from '@/packages/index.d'
 // 获取类型
 type ChartEditStoreType = typeof useChartEditStore
 
@@ -13,8 +15,9 @@ export const useChartInteract = (
   param: { [T: string]: any },
   interactEventOn: string
 ) => {
-  if (!isPreview()) return
+  // if (!isPreview()) return
   const chartEditStore = useChartEditStore()
+  const chartInstanceStore = useChartInstanceStore()
   const { interactEvents } = chartConfig.events
   const fnOnEvent = interactEvents.filter(item => {
     return item.interactOn === interactEventOn
@@ -40,6 +43,7 @@ export const useChartInteract = (
     } else {
       const index = chartEditStore.fetchTargetIndex(item.interactComponentId)
       if (index === -1) return
+      const component = chartEditStore.componentList[index]
       const { Params, Header } = toRefs(chartEditStore.componentList[index].request.requestParams)
 
       Object.keys(item.interactFn).forEach(key => {
@@ -50,6 +54,28 @@ export const useChartInteract = (
           Header.value[key] = param[item.interactFn[key]]
         }
       })
+
+      // 处理关联组件属性及方法
+    const instance = chartInstanceStore.getComponentInstance(component.id)
+    if (!instance) {
+      return
+    }
+    const methods = instance.exposed?.getExposedMethods()
+    let method = null
+    if (item.interactMethod && item.interactMethod.method && methods && methods.length) {
+      const targetMethod = methods.find((x: ExposedMethodType) => x.value === item.interactMethod.method)
+      targetMethod ? (method = targetMethod.handler) : null
+    }
+    let methodFilter = null
+    if (item.interactMethod && item.interactMethod.handler) {
+      methodFilter = new Function('eventData', 'targetMethod', item.interactMethod.handler)
+    }
+    if (method && !methodFilter) {
+      method.call(null, cloneDeep(param))
+    }
+    if (method && methodFilter) {
+      methodFilter(cloneDeep(param), method)
+    }
     }
   })
 }

@@ -5,6 +5,8 @@
       组件 id：
       <n-text>{{ targetData.id }}</n-text>
     </n-text>
+    <chart-event-exposed-prop-handle></chart-event-exposed-prop-handle>
+    <chart-event-exposed-method-handle></chart-event-exposed-method-handle>
     <chart-event-interaction></chart-event-interaction>
     <chart-event-base-handle></chart-event-base-handle>
     <chart-event-advanced-handle></chart-event-advanced-handle>
@@ -13,6 +15,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { ChartEventExposedPropHandle } from './components/ChartEventExposedPropHandle'
+import { ChartEventExposedMethodHandle } from './components/ChartEventExposedMethodHandle'
 import { ChartEventInteraction } from './components/ChartEventInteraction'
 import { ChartEventAdvancedHandle } from './components/ChartEventAdvancedHandle'
 import { ChartEventBaseHandle } from './components/ChartEventBaseHandle'

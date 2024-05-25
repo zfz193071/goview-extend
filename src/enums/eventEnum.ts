@@ -14,7 +14,9 @@ export enum BaseEvent {
 export enum InteractEvents {
   INTERACT_ON = 'interactOn',
   INTERACT_COMPONENT_ID = 'interactComponentId',
-  INTERACT_FN = 'interactFn'
+  INTERACT_FN = 'interactFn',
+  INTERACT_PROP = 'interactProp',
+  INTERACT_METHOD = 'interactMethod',
 }
 
 // 全局组件交互回调事件触发的类型（当然可以自定义名称）

@@ -91,6 +91,10 @@ export class PublicConfigClass implements PublicConfigType {
   public request = cloneDeep(requestConfig)
   // 数据过滤
   public filter = undefined
+  // 自定义属性
+  public definedExposedProps = []
+  // 对外方法
+  public definedExposedMethods = []
   // 事件
   public events = {
     baseEvent: {

@@ -2,6 +2,24 @@ import { BaseEvent, EventLife, InteractEvents, InteractEventOn, InteractActionsT
 import type { GlobalThemeJsonType } from '@/settings/chartThemes/index'
 import type { RequestConfigType } from '@/store/modules/chartEditStore/chartEditStore.d'
 
+export type PropValueType = any
+
+export interface ExposedPropType {
+  value: string,
+  label: string,
+  defaultValue: number | string | undefined,
+  isolate: number,
+  ref?: Ref<PropValueType> | undefined,
+  getValue?: Function | undefined,
+  setValue?: Function | undefined
+}
+
+export interface ExposedMethodType {
+  value: string,
+  label: string,
+  handler: Function
+}
+
 export enum ChartFrameEnum {
   // 支持 dataset 的 echarts 框架
   ECHARTS = 'echarts',
@@ -114,7 +132,7 @@ export const BlendModeEnumList = [
 export interface PublicConfigType {
   id: string
   isGroup: boolean
-  attr: { x: number; y: number; w: number; h: number; zIndex: number; offsetX: number; offsetY: number }
+  attr: { x: number; y: number; w: number; h: number; zIndex: number; offsetX: number; offsetY: number, initializedVisible: boolean, }
   styles: {
     [FilterEnum.FILTERS_SHOW]: boolean
     [FilterEnum.OPACITY]: number
@@ -139,7 +157,11 @@ export interface PublicConfigType {
   }
   filter?: string
   status: StatusType
-  interactActions?: InteractActionsType[]
+  interactActions?: InteractActionsType[],
+  // 自定义属性
+  definedExposedProps: ExposedPropType[],
+  // 对外方法
+  definedExposedMethods: ExposedMethodType[],
   events: {
     baseEvent: {
       [K in BaseEvent]?: string
@@ -151,6 +173,8 @@ export interface PublicConfigType {
       [InteractEvents.INTERACT_ON]: InteractEventOn | undefined
       [InteractEvents.INTERACT_COMPONENT_ID]: string | undefined
       [InteractEvents.INTERACT_FN]: { [name: string]: string }
+      [InteractEvents.INTERACT_PROP]: { [prop: string]: string, [handler: string]: string }
+      [InteractEvents.INTERACT_METHOD]: { [method: string]: string, [handler: string]: string }
     }[]
   }
 }

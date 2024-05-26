@@ -199,7 +199,7 @@ const fnExposedPropOptions = (id: string | undefined): Array<ExposedPropType> =>
     return []
   }
   const instance = chartInstanceStore.getComponentInstance(id)
-  return (instance?.exposed?.getExposedProps() || []).map((item: ExposedPropType) => 
+  return (instance?.exposed?.getExposedProps?.() || []).map((item: ExposedPropType) => 
     ({...item, label: `${item.label} - ${item.value}`})
   )
 }

@@ -15,8 +15,9 @@ import { mergeTheme } from '@/packages/public/chart'
 import { useChartEditStore } from '@/store/modules/chartEditStore/chartEditStore'
 import { chartColorsSearch, defaultTheme } from '@/settings/chartThemes/index'
 import { DatasetComponent, GridComponent, TooltipComponent, LegendComponent } from 'echarts/components'
-import { useChartDataFetch } from '@/hooks'
+import { useChartDataFetch, useExposedMethod, useChartInstance } from '@/hooks'
 import { isPreview, colorGradientCustomMerge } from '@/utils'
+import type { ExposedMethodType } from '@/packages/index.d'
 
 const props = defineProps({
   themeSetting: {
@@ -42,6 +43,19 @@ const option = reactive({
   value: {}
 })
 
+const test = (value: any) => console.info('test : ==================>', JSON.stringify(value))
+const componentExposedMethods: Array<ExposedMethodType> = [
+  {
+    value: 'test',
+    label: '测试',
+    handler: test
+  }
+]
+const { instance, detachInstance } = useChartInstance()
+defineExpose({
+  // 组件对外暴露的方法
+  ...useExposedMethod(props.chartConfig, componentExposedMethods)
+})
 // 初始化与渐变色处理
 watch(
   () => chartEditStore.getEditCanvasConfig.chartThemeColor,

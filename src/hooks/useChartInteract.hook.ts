@@ -29,6 +29,7 @@ export const useChartInteract = (
     const globalConfigPindAprndex = chartEditStore.requestGlobalConfig.requestDataPond.findIndex(cItem =>
       cItem.dataPondId === item.interactComponentId
     )
+    debugger
     if (globalConfigPindAprndex !== -1) {
       const { Params, Header } = toRefs(chartEditStore.requestGlobalConfig.requestDataPond[globalConfigPindAprndex].dataPondRequestConfig.requestParams)
 
@@ -60,6 +61,24 @@ export const useChartInteract = (
     if (!instance) {
       return
     }
+
+    const props = instance.exposed?.getExposedProps?.()
+    let setValue = null
+    if (item.interactProp && item.interactProp.prop && props && props.length) {
+      const targetProp = props.find((x: ExposedPropType) => x.value === item.interactProp.prop)
+      targetProp ? (setValue = targetProp.setValue) : null
+    }
+    let setValueFilter = null
+    if (item.interactProp && item.interactProp.handler) {
+      setValueFilter = new Function('eventData', 'targetPropSetter', item.interactProp.handler)
+    }
+    if (setValue && !setValueFilter) {
+      setValue.call(null, cloneDeep(param))
+    }
+    if (setValue && setValueFilter) {
+      setValueFilter(cloneDeep(param), setValue)
+    }
+
     const methods = instance.exposed?.getExposedMethods()
     let method = null
     if (item.interactMethod && item.interactMethod.method && methods && methods.length) {

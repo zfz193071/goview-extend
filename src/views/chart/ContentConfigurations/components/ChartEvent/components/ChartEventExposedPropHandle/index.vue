@@ -90,7 +90,7 @@ const { targetData } = useTargetData()
 const chartInstanceStore = useChartInstanceStore()
 const readonlyExposedProps = computed(() => {
   const instance = chartInstanceStore.getComponentInstance(targetData.value.id)
-  return (instance?.exposed?.getExposedProps() || [])
+  return (instance?.exposed?.getExposedProps?.() || [])
     .filter((x: ExposedPropType) => x.isolate > 0)
 })
 

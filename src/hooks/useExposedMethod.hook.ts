@@ -1,7 +1,7 @@
 import { CreateComponentType } from '@/packages/index.d'
 import type { ExposedMethodType } from '@/packages/index.d'
 import { commonExposedMethodEnum, commonExposedMethodNames } from '@/enums/methodEnum'
-export const useExposedMethod = (targetComponent: CreateComponentType, componentExposedMethods: Array<ExposedMethodType>) => {
+export const useExposedMethod = (targetComponent: CreateComponentType | any, componentExposedMethods: Array<ExposedMethodType>) => {
 
     const toggle = (visible: boolean) => {
         targetComponent.attr.initializedVisible = visible

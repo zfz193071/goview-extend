@@ -9,7 +9,7 @@ import { PropType, toRefs, shallowReactive, watch } from 'vue'
 import cloneDeep from 'lodash/cloneDeep'
 import { CreateComponentType } from '@/packages/index.d'
 import { useChartEditStore } from '@/store/modules/chartEditStore/chartEditStore'
-import { useChartInteract, useExposedProp } from '@/hooks'
+import { useChartInteract, useChartInstance, useExposedProp } from '@/hooks'
 import { InteractEventOn } from '@/enums/eventEnum'
 import type { ExposedPropType } from '@/packages/index.d'
 import { ComponentInteractParamsEnum } from './interact'
@@ -25,13 +25,14 @@ const { w, h } = toRefs(props.chartConfig.attr)
 const option = shallowReactive({
   value: cloneDeep(props.chartConfig.option)
 })
-const componentExposedProps: Array<ExposedPropType> = option.value.dataset.map(a => {
+const componentExposedProps: Array<ExposedPropType> = option.value.dataset.map((a:any) => {
   return {
     ...a,
     defaultValue: a.value,
     isolate: 1
   }
 })
+const { instance, detachInstance } = useChartInstance()
 defineExpose({
   // 组件对外暴露的状态
   ...useExposedProp(props.chartConfig, componentExposedProps),

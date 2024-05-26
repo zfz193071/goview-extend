@@ -5,7 +5,7 @@
       组件 id：
       <n-text>{{ targetData.id }}</n-text>
     </n-text>
-    <chart-event-exposed-prop-handle></chart-event-exposed-prop-handle>
+    <!-- <chart-event-exposed-prop-handle></chart-event-exposed-prop-handle> -->
     <!-- <chart-event-exposed-method-handle></chart-event-exposed-method-handle> -->
     <chart-event-interaction></chart-event-interaction>
     <chart-event-base-handle></chart-event-base-handle>

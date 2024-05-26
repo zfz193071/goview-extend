@@ -1,5 +1,5 @@
 <template>
-    <n-collapse-item title="组件属性列表" name="5">
+    <n-collapse-item title="组件对外属性" name="5">
       <template #header-extra>
         <n-space>
           <n-tooltip trigger="hover">
@@ -10,7 +10,7 @@
             </template>
             组件对外开放属性，可在组件交互控制时通过其它组件事件修改
           </n-tooltip>
-          <n-button type="primary" tertiary size="small" @click.stop="showModal = true">
+          <n-button type="primary" tertiary size="small">
             <template #icon>
               <n-icon>
                 <pencil-icon />
@@ -20,66 +20,26 @@
           </n-button>
         </n-space>
       </template>
-      <n-table size="small" striped v-if="readonlyExposedProps.length || definedExposedProps.length">
-          <thead>
-            <tr>
-              <th v-for="item in ['类型', '属性字段', '说明']" :key="item">{{ item }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(cItem, index) in [...readonlyExposedProps, ...definedExposedProps]" :key="index">
-              <td>{{ cItem.isolate > 0 ? '内部属性' : '自定义属性' }}</td>
-              <td>{{ cItem.value }}</td>
-              <td>{{ cItem.label }}</td>
-            </tr>
-          </tbody>
-        </n-table>
+      <setting-item-box :alone="true" v-if="readonlyExposedProps.length || definedExposedProps.length">
+        <template #name>
+          <n-text>绑定</n-text>
+        </template>
+        <n-select
+          class="select-type-options"
+          size="tiny"
+          filterable
+          placeholder="仅展示符合条件的组件"
+          :options="readonlyExposedProps"
+        />
+      </setting-item-box>
     </n-collapse-item>
-
-    <!-- 弹窗 -->
-    <n-modal class="go-chart-data-monaco-editor" v-bind:show="showModal" :mask-closable="false">
-      <n-card :bordered="false" role="dialog" size="small" aria-modal="true" style="width: 1200px; height: 700px">
-        <template #header>
-          <n-space>
-            <n-text>组件属性编辑器</n-text>
-          </n-space>
-        </template>
-
-        <template #header-extra> </template>
-
-        <n-layout style="height: 580px; padding-right: 20px">
-          <exposed-prop-edit-table
-            :readonlyValue="readonlyExposedProps"
-            v-model:modelValue="definedExposedProps"
-          ></exposed-prop-edit-table>
-        </n-layout>
-
-        <template #action>
-          <n-space justify="space-between">
-            <div class="go-flex-items-center">
-              <n-tag :bordered="false" type="primary">
-                <template #icon>
-                  <n-icon :component="DocumentTextIcon" />
-                </template>
-                说明
-              </n-tag>
-              <n-text class="go-ml-2" depth="2">内部属性只读，自定义属性可用于数据请求参数「写法：${props.xxx} 」及其它组件交互控制</n-text>
-            </div>
-
-            <n-space>
-              <n-button size="medium" @click="closeProps">取消</n-button>
-              <n-button size="medium" type="primary" @click="saveProps">保存</n-button>
-            </n-space>
-          </n-space>
-        </template>
-      </n-card>
-    </n-modal>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, toRefs } from 'vue'
 import cloneDeep from 'lodash/cloneDeep'
 import { icon } from '@/plugins'
+import { SettingItemBox } from '@/components/Pages/ChartItemSetting'
 import type { ExposedPropType } from '@/packages/index.d'
 import { useChartInstanceStore } from '@/store/modules/chartInstanceStore/chartInstanceStore'
 import { useTargetData } from '../../../hooks/useTargetData.hook'

@@ -37,7 +37,6 @@ const props = defineProps({
     required: true
   }
 })
-
 const initOptions = useCanvasInitOptions(props.chartConfig.option, props.themeSetting)
 
 use([DatasetComponent, CanvasRenderer, BarChart, GridComponent, TooltipComponent, LegendComponent])

@@ -103,7 +103,7 @@ export const useChartInteract = (
       const methods = item.interactTabs[tabKeys[chosenIndex]][0]
       const targetMethod = methods.find((x: ExposedMethodType) => x.value === item.interactTabMethod[tabKeys[chosenIndex]])
       // @ts-ignore
-      targetMethod.handler.call(null, cloneDeep(param))
+      targetMethod.handler.call(null, {id: item.interactComponentId})
     } else {
       const methods = instance.exposed?.getExposedMethods()
       executeMethod(methods)

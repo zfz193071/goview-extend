@@ -88,7 +88,9 @@ const canvasPositionList = computed(() => {
       y: 0,
       offsetX: 0,
       offsetY: 0,
-      zIndex: 0
+      zIndex: 0,
+      // 允许关闭
+      initializedVisible: true,
     }
   }
 })

@@ -47,7 +47,7 @@ export class PublicConfigClass implements PublicConfigType {
   public id = getUUID()
   public isGroup = false
   // 基本信息
-  public attr = { ...chartInitConfig, zIndex: -1 }
+  public attr = { ...chartInitConfig, zIndex: -1, initializedVisible: true, }
   // 基本样式
   public styles = {
     // 使用滤镜
@@ -137,5 +137,5 @@ export class PublicGroupConfigClass extends PublicConfigClass implements CreateC
   // 标识
   public id = getUUID()
   // 基本信息
-  public attr = { w: 0, h: 0, x: 0, y: 0, offsetX: 0, offsetY: 0, zIndex: -1 }
+  public attr = { w: 0, h: 0, x: 0, y: 0, offsetX: 0, offsetY: 0, zIndex: -1, initializedVisible: true, }
 }

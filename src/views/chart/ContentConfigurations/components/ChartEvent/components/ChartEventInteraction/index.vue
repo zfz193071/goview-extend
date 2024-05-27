@@ -17,7 +17,7 @@
       <n-text :depth="3">暂无内容</n-text>
     </div>
     <div v-for="a in readonlyExposedProps" :key="a.value">
-      <n-tag :bordered="false" type="primary"> {{ a.label }} </n-tag>
+      <n-tag :bordered="false" type="error"> {{ a.label }} </n-tag>
       <n-card
         v-for="(item, cardIndex) in targetData.events.interactEvents"
         :key="cardIndex"
@@ -144,7 +144,7 @@
           <setting-item-box name="方法">
             <n-select
               size="tiny"
-              v-model:value="item.interactMethod.method"
+              v-model:value="item.interactTabMethod[a.value]"
               @update:value="fnUpdateMethods($event, item.interactComponentId, a.value, item)"
               :options="fnExposedMethodOptions(item.interactComponentId)"
               clearable
@@ -220,7 +220,7 @@ const fnUpdateMethods = (e: MouseEvent, id: string | undefined, tab: string, ite
   if (!item.interactTabs[tab]) {
     item.interactTabs[tab] = []
   }
-  item.interactTabs[tab].push(instance?.exposed?.getExposedProps?.())
+  item.interactTabs[tab].push(instance?.exposed?.getExposedMethods?.())
 }
 const fnExposedMethodOptions = (id: string | undefined): Array<ExposedMethodType> => {
   if (!id) {
@@ -313,6 +313,7 @@ const evAddEventsFn = () => {
     interactOn: undefined,
     interactComponentId: undefined,
     interactTabs: {},
+    interactTabMethod: {},
     interactFn: {},
     interactProp: {},
     interactMethod: {}

@@ -11,7 +11,20 @@ export const useComponentStyle = (attr: AttrType, index: number) => {
   }
   return componentStyle
 }
-
+export const useVisibleStyle = (attr: AttrType) => {
+  if(!attr) return {}
+  if (attr.initializedVisible) {
+    return {
+      opacity: 1.0,
+    }
+  }
+  return {
+    opacity: 0.65,
+    'background-image': `linear-gradient(45deg, #000 25%, transparent 0, transparent 75%, #000 0), linear-gradient(45deg, #000 25%, transparent 0, transparent 75%, #000 0)`,
+    'background-position': `0 0, 100px 100px`,
+    'background-size': `40px 40px`,
+  }
+}
 export const useSizeStyle = (attr: AttrType, scale?: number) => {
   if(!attr) return {}
   return {

@@ -8,11 +8,11 @@ export const useExposedMethod = (targetComponent: CreateComponentType | any, com
     }
 
     const show = () => {
-        return toggle(true)
+        return targetComponent.attr.initializedVisible = true
     }
 
     const hide = () => {
-        return toggle(false)
+        return targetComponent.attr.initializedVisible = false
     }
 
     const componentExposed = componentExposedMethods.reduce((rtn, item) => ({

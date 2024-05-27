@@ -14,13 +14,14 @@ import { CanvasRenderer } from 'echarts/renderers'
 import { BarChart } from 'echarts/charts'
 import config, { includes, seriesItem } from './config'
 import { mergeTheme } from '@/packages/public/chart'
-import { useChartDataFetch } from '@/hooks'
+import { useChartDataFetch, useExposedMethod, useChartInstance } from '@/hooks'
 import { CreateComponentType } from '@/packages/index.d'
 import { useChartEditStore } from '@/store/modules/chartEditStore/chartEditStore'
 import { isPreview } from '@/utils'
 import { DatasetComponent, GridComponent, TooltipComponent, LegendComponent } from 'echarts/components'
 import isObject from 'lodash/isObject'
 import cloneDeep from 'lodash/cloneDeep'
+import type { ExposedMethodType } from '@/packages/index.d'
 
 const props = defineProps({
   themeSetting: {
@@ -45,6 +46,19 @@ const replaceMergeArr = ref<string[]>()
 
 const option = computed(() => {
   return mergeTheme(props.chartConfig.option, props.themeSetting, includes)
+})
+const test = (value: any) => console.info('test : ==================>', JSON.stringify(value))
+const componentExposedMethods: Array<ExposedMethodType> = [
+  {
+    value: 'test',
+    label: '测试',
+    handler: test
+  }
+]
+const { instance, detachInstance } = useChartInstance()
+defineExpose({
+  // 组件对外暴露的方法
+  ...useExposedMethod(props.chartConfig, componentExposedMethods)
 })
 
 // dataset 无法变更条数的补丁
@@ -84,6 +98,6 @@ watch(
     deep: false
   }
 )
-
+//@ts-ignore
 const { vChartRef } = useChartDataFetch(props.chartConfig, useChartEditStore)
 </script>

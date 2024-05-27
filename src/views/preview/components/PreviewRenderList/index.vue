@@ -25,6 +25,7 @@
     <!-- 单组件 -->
     <component
       v-else
+      v-show="item.attr.initializedVisible"
       :is="item.chartConfig.chartKey"
       :id="item.id"
       :chartConfig="item"

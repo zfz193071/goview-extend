@@ -44,7 +44,9 @@ watch(
       h: 0,
       // 偏移
       offsetX: 0,
-      offsetY: 0
+      offsetY: 0,
+      // 允许关闭
+      initializedVisible: true,
     }
 
     // 处理位置

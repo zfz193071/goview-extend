@@ -29,7 +29,6 @@ export const useChartInteract = (
     const globalConfigPindAprndex = chartEditStore.requestGlobalConfig.requestDataPond.findIndex(cItem =>
       cItem.dataPondId === item.interactComponentId
     )
-    debugger
     if (globalConfigPindAprndex !== -1) {
       const { Params, Header } = toRefs(chartEditStore.requestGlobalConfig.requestDataPond[globalConfigPindAprndex].dataPondRequestConfig.requestParams)
 
@@ -101,11 +100,10 @@ export const useChartInteract = (
     if (tabKeys.length) {
       const chosenIndex = tabKeys.findIndex(a => param.data)
       // @ts-ignore
-      methodsArr = chartConfig.tabMethods[tabKeys[chosenIndex]]
+      const methods = item.interactTabs[tabKeys[chosenIndex]][0]
+      const targetMethod = methods.find((x: ExposedMethodType) => x.value === item.interactTabMethod[tabKeys[chosenIndex]])
       // @ts-ignore
-      methodsArr.forEach(methods => {
-        executeMethod(methods)
-      })
+      targetMethod.handler.call(null, cloneDeep(param))
     } else {
       const methods = instance.exposed?.getExposedMethods()
       executeMethod(methods)

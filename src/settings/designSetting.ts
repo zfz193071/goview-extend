@@ -29,6 +29,7 @@ export const chartInitConfig = {
   // 不建议动 offset
   offsetX: 0,
   offsetY: 0,
+  initializedVisible: true,
 }
 
 // dialog 图标的大小

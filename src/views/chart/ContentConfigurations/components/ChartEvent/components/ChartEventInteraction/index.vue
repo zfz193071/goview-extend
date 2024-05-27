@@ -16,148 +16,152 @@
       <img :src="noData" alt="暂无数据" />
       <n-text :depth="3">暂无内容</n-text>
     </div>
-
-    <n-card
-      v-for="(item, cardIndex) in targetData.events.interactEvents"
-      :key="cardIndex"
-      class="n-card-shallow"
-      size="small"
-    >
-      <n-space justify="space-between">
-        <n-text>关联组件 - {{ cardIndex + 1 }}</n-text>
-        <n-button type="error" text size="small" @click="evDeleteEventsFn(cardIndex)">
-          <template #icon>
-            <n-icon>
-              <close-icon />
-            </n-icon>
-          </template>
-        </n-button>
-      </n-space>
-
-      <n-divider style="margin: 10px 0" />
-
-      <n-tag :bordered="false" type="primary"> 选择目标组件 </n-tag>
-
-      <setting-item-box name="触发事件" :alone="true">
-        <n-input-group v-if="interactActions">
-          <n-select
-            class="select-type-options"
-            v-model:value="item.interactOn"
-            size="tiny"
-            :options="interactActions"
-          />
-        </n-input-group>
-      </setting-item-box>
-
-      <setting-item-box :alone="true">
-        <template #name>
-          <n-text>绑定</n-text>
-          <n-tooltip trigger="hover">
-            <template #trigger>
-              <n-icon size="21" :depth="3">
-                <help-outline-icon></help-outline-icon>
+    <div v-for="a in readonlyExposedProps" :key="a.value">
+      <n-tag :bordered="false" type="primary"> {{ a.label }} </n-tag>
+      <n-card
+        v-for="(item, cardIndex) in targetData.events.interactEvents"
+        :key="cardIndex"
+        class="n-card-shallow"
+        size="small"
+      >
+        <n-space justify="space-between">
+          <n-text>关联组件 - {{ cardIndex + 1 }}</n-text>
+          <n-button type="error" text size="small" @click="evDeleteEventsFn(cardIndex)">
+            <template #icon>
+              <n-icon>
+                <close-icon />
               </n-icon>
             </template>
-            <n-text>不支持「静态组件」支持「组件」「公共APi」</n-text>
-          </n-tooltip>
+          </n-button>
+        </n-space>
+
+        <n-divider style="margin: 10px 0" />
+
+        <n-tag :bordered="false" type="primary"> 选择目标组件 </n-tag>
+
+        <setting-item-box name="触发事件" :alone="true">
+          <n-input-group v-if="interactActions">
+            <n-select
+              class="select-type-options"
+              v-model:value="item.interactOn"
+              size="tiny"
+              :options="interactActions"
+            />
+          </n-input-group>
+        </setting-item-box>
+
+        <setting-item-box :alone="true">
+          <template #name>
+            <n-text>绑定</n-text>
+            <n-tooltip trigger="hover">
+              <template #trigger>
+                <n-icon size="21" :depth="3">
+                  <help-outline-icon></help-outline-icon>
+                </n-icon>
+              </template>
+              <n-text>不支持「静态组件」支持「组件」「公共APi」</n-text>
+            </n-tooltip>
+          </template>
+          <n-select
+            class="select-type-options"
+            value-field="id"
+            label-field="title"
+            size="tiny"
+            filterable
+            placeholder="仅展示符合条件的组件"
+            v-model:value="item.interactComponentId"
+            :options="fnEventsOptions()"
+          />
+        </setting-item-box>
+
+        <setting-item-box v-if="fnDimensionsAndSource(item.interactOn).length" name="查询结果" :alone="true">
+          <n-table size="small" striped>
+            <thead>
+              <tr>
+                <th v-for="item in ['参数', '说明']" :key="item">{{ item }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(cItem, index) in fnDimensionsAndSource(item.interactOn)" :key="index">
+                <td>{{ cItem.value }}</td>
+                <td>{{ cItem.label }}</td>
+              </tr>
+            </tbody>
+          </n-table>
+        </setting-item-box>
+
+        <n-tag :bordered="false" type="primary"> 关联目标请求参数 </n-tag>
+
+        <setting-item-box
+          :name="requestParamsItem"
+          v-for="requestParamsItem in requestParamsTypeList"
+          :key="requestParamsItem"
+        >
+          <setting-item
+            v-for="(ovlValue, ovlKey, index) in fnGetRequest(item.interactComponentId, requestParamsItem)"
+            :key="index"
+            :name="`${ovlKey}`"
+          >
+            <n-select
+              size="tiny"
+              v-model:value="item.interactFn[ovlKey]"
+              :options="fnDimensionsAndSource(item.interactOn)"
+              clearable
+            ></n-select>
+          </setting-item>
+          <n-text
+            v-show="JSON.stringify(fnGetRequest(item.interactComponentId, requestParamsItem)) === '{}'"
+            class="go-pt-1"
+            depth="3"
+          >
+            暂无数据
+          </n-text>
+        </setting-item-box>
+        <template v-if="fnExposedPropOptions(item.interactComponentId).length">
+
+          <n-tag :bordered="false" type="primary"> 更新目标组件属性 </n-tag>
+          <setting-item-box name="属性">
+            <n-select
+              size="tiny"
+              v-model:value="item.interactProp.prop"
+              :options="fnExposedPropOptions(item.interactComponentId)"
+              clearable
+            ></n-select>
+          </setting-item-box>
+          
+          <setting-item-box :alone="true" :hideName="true" :itemRightStyle="{ width: '100%' }" v-if="item.interactProp.handler">
+            <modal-monaco-editor-and-show
+              v-model:modelValue="item.interactProp.handler"
+              handler-name="handler(eventData, targetPropSetter)"
+              :placeholder="item.interactProp.handler || `targetPropSetter(eventData)`"
+              :cardStyle="{ width: '294px' }"
+            ></modal-monaco-editor-and-show>
+          </setting-item-box>
         </template>
-        <n-select
-          class="select-type-options"
-          value-field="id"
-          label-field="title"
-          size="tiny"
-          filterable
-          placeholder="仅展示符合条件的组件"
-          v-model:value="item.interactComponentId"
-          :options="fnEventsOptions()"
-        />
-      </setting-item-box>
 
-      <setting-item-box v-if="fnDimensionsAndSource(item.interactOn).length" name="查询结果" :alone="true">
-        <n-table size="small" striped>
-          <thead>
-            <tr>
-              <th v-for="item in ['参数', '说明']" :key="item">{{ item }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(cItem, index) in fnDimensionsAndSource(item.interactOn)" :key="index">
-              <td>{{ cItem.value }}</td>
-              <td>{{ cItem.label }}</td>
-            </tr>
-          </tbody>
-        </n-table>
-      </setting-item-box>
+        <template v-if="fnExposedMethodOptions(item.interactComponentId).length">
+          <n-tag :bordered="false" type="primary"> 调用目标组件方法 </n-tag>
+          <setting-item-box name="方法">
+            <n-select
+              size="tiny"
+              v-model:value="item.interactMethod.method"
+              @update:value="fnUpdateMethods($event, item.interactComponentId, a.value, item)"
+              :options="fnExposedMethodOptions(item.interactComponentId)"
+              clearable
+            ></n-select>
+          </setting-item-box>
 
-      <n-tag :bordered="false" type="primary"> 关联目标请求参数 </n-tag>
-
-      <setting-item-box
-        :name="requestParamsItem"
-        v-for="requestParamsItem in requestParamsTypeList"
-        :key="requestParamsItem"
-      >
-        <setting-item
-          v-for="(ovlValue, ovlKey, index) in fnGetRequest(item.interactComponentId, requestParamsItem)"
-          :key="index"
-          :name="`${ovlKey}`"
-        >
-          <n-select
-            size="tiny"
-            v-model:value="item.interactFn[ovlKey]"
-            :options="fnDimensionsAndSource(item.interactOn)"
-            clearable
-          ></n-select>
-        </setting-item>
-        <n-text
-          v-show="JSON.stringify(fnGetRequest(item.interactComponentId, requestParamsItem)) === '{}'"
-          class="go-pt-1"
-          depth="3"
-        >
-          暂无数据
-        </n-text>
-      </setting-item-box>
-      <template v-if="fnExposedPropOptions(item.interactComponentId).length">
-        <n-tag :bordered="false" type="primary"> 更新目标组件属性 </n-tag>
-        <setting-item-box name="属性">
-          <n-select
-            size="tiny"
-            v-model:value="item.interactProp.prop"
-            :options="fnExposedPropOptions(item.interactComponentId)"
-            clearable
-          ></n-select>
-        </setting-item-box>
-        
-        <setting-item-box :alone="true" :hideName="true" :itemRightStyle="{ width: '100%' }" v-if="item.interactProp.handler">
-          <modal-monaco-editor-and-show
-            v-model:modelValue="item.interactProp.handler"
-            handler-name="handler(eventData, targetPropSetter)"
-            :placeholder="item.interactProp.handler || `targetPropSetter(eventData)`"
-            :cardStyle="{ width: '294px' }"
-          ></modal-monaco-editor-and-show>
-        </setting-item-box>
-      </template>
-
-      <template v-if="fnExposedMethodOptions(item.interactComponentId).length">
-        <n-tag :bordered="false" type="primary"> 调用目标组件方法 </n-tag>
-        <setting-item-box name="方法">
-          <n-select
-            size="tiny"
-            v-model:value="item.interactMethod.method"
-            :options="fnExposedMethodOptions(item.interactComponentId)"
-            clearable
-          ></n-select>
-        </setting-item-box>
-
-        <setting-item-box :alone="true" :hideName="true" :itemRightStyle="{ width: '100%' }" v-if="item.interactMethod.handler">
-          <modal-monaco-editor-and-show
-            v-model:modelValue="item.interactMethod.handler"
-            handler-name="handler(eventData, targetMethod)"
-            :placeholder="item.interactMethod.handler || `targetMethod(eventData)`"
-            :cardStyle="{ width: '294px' }"
-          ></modal-monaco-editor-and-show>
-        </setting-item-box>
-      </template>
-    </n-card>
+          <setting-item-box :alone="true" :hideName="true" :itemRightStyle="{ width: '100%' }" v-if="item.interactMethod.handler">
+            <modal-monaco-editor-and-show
+              v-model:modelValue="item.interactMethod.handler"
+              handler-name="handler(eventData, targetMethod)"
+              :placeholder="item.interactMethod.handler || `targetMethod(eventData)`"
+              :cardStyle="{ width: '294px' }"
+            ></modal-monaco-editor-and-show>
+          </setting-item-box>
+        </template>
+      </n-card>
+    </div>
   </n-collapse-item>
 </template>
 
@@ -180,6 +184,11 @@ const { targetData, chartEditStore } = useTargetData()
 const requestParamsTypeList = [RequestParamsTypeEnum.PARAMS, RequestParamsTypeEnum.HEADER]
 
 const chartInstanceStore = useChartInstanceStore()
+const readonlyExposedProps = computed(() => {
+  const instance = chartInstanceStore.getComponentInstance(targetData.value.id)
+  return (instance?.exposed?.getExposedProps?.() || [])
+    .filter((x: ExposedPropType) => x.isolate > 0)
+})
 // 获取组件交互事件列表
 const interactActions = computed(() => {
   const interactActions = targetData.value.interactActions
@@ -202,6 +211,16 @@ const fnExposedPropOptions = (id: string | undefined): Array<ExposedPropType> =>
   return (instance?.exposed?.getExposedProps?.() || []).map((item: ExposedPropType) => 
     ({...item, label: `${item.label} - ${item.value}`})
   )
+}
+const fnUpdateMethods = (e: MouseEvent, id: string | undefined, tab: string, item:any) => {
+  if (!id) {
+    return
+  }
+  const instance = chartInstanceStore.getComponentInstance(id)
+  if (!item.interactTabs[tab]) {
+    item.interactTabs[tab] = []
+  }
+  item.interactTabs[tab].push(instance?.exposed?.getExposedProps?.())
 }
 const fnExposedMethodOptions = (id: string | undefined): Array<ExposedMethodType> => {
   if (!id) {
@@ -293,6 +312,7 @@ const evAddEventsFn = () => {
   targetData.value.events.interactEvents.push({
     interactOn: undefined,
     interactComponentId: undefined,
+    interactTabs: {},
     interactFn: {},
     interactProp: {},
     interactMethod: {}

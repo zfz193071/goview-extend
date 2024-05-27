@@ -79,22 +79,38 @@ export const useChartInteract = (
       setValueFilter(cloneDeep(param), setValue)
     }
 
-    const methods = instance.exposed?.getExposedMethods()
-    let method = null
-    if (item.interactMethod && item.interactMethod.method && methods && methods.length) {
-      const targetMethod = methods.find((x: ExposedMethodType) => x.value === item.interactMethod.method)
-      targetMethod ? (method = targetMethod.handler) : null
+    function executeMethod(methods:any) {
+      let method = null
+      if (item.interactMethod && item.interactMethod.method && methods && methods.length) {
+        const targetMethod = methods.find((x: ExposedMethodType) => x.value === item.interactMethod.method)
+        targetMethod ? (method = targetMethod.handler) : null
+      }
+      let methodFilter = null
+      if (item.interactMethod && item.interactMethod.handler) {
+        methodFilter = new Function('eventData', 'targetMethod', item.interactMethod.handler)
+      }
+      if (method && !methodFilter) {
+        method.call(null, cloneDeep(param))
+      }
+      if (method && methodFilter) {
+        methodFilter(cloneDeep(param), method)
+      }
     }
-    let methodFilter = null
-    if (item.interactMethod && item.interactMethod.handler) {
-      methodFilter = new Function('eventData', 'targetMethod', item.interactMethod.handler)
+    // @ts-ignore
+    const tabKeys = Object.keys(item.interactTabs)
+    if (tabKeys.length) {
+      const chosenIndex = tabKeys.findIndex(a => param.data)
+      // @ts-ignore
+      methodsArr = chartConfig.tabMethods[tabKeys[chosenIndex]]
+      // @ts-ignore
+      methodsArr.forEach(methods => {
+        executeMethod(methods)
+      })
+    } else {
+      const methods = instance.exposed?.getExposedMethods()
+      executeMethod(methods)
     }
-    if (method && !methodFilter) {
-      method.call(null, cloneDeep(param))
-    }
-    if (method && methodFilter) {
-      methodFilter(cloneDeep(param), method)
-    }
+    
     }
   })
 }

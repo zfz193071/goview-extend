@@ -17,6 +17,7 @@ export enum InteractEvents {
   INTERACT_FN = 'interactFn',
   INTERACT_PROP = 'interactProp',
   INTERACT_METHOD = 'interactMethod',
+  INTERACT_TABS = 'interactTabs',
 }
 
 // 全局组件交互回调事件触发的类型（当然可以自定义名称）

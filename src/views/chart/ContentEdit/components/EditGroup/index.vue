@@ -42,6 +42,7 @@
           :style="{
             ...useSizeStyle(item.attr),
             ...getFilterStyle(item.styles),
+            ...useVisibleStyle(item.attr),
             ...getTransformStyle(item.styles)
           }"
         ></component>
@@ -60,7 +61,7 @@ import { animationsClass, getFilterStyle, getTransformStyle, getBlendModeStyle, 
 import { useChartEditStore } from '@/store/modules/chartEditStore/chartEditStore'
 import { useContextMenu, divider } from '@/views/chart/hooks/useContextMenu.hook'
 import { useMouseHandle } from '../../hooks/useDrag.hook'
-import { useComponentStyle, useSizeStyle } from '../../hooks/useStyle.hook'
+import { useComponentStyle, useSizeStyle, useVisibleStyle } from '../../hooks/useStyle.hook'
 import { EditShapeBox } from '../../components/EditShapeBox'
 
 const props = defineProps({

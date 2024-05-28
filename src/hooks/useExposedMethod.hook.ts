@@ -2,26 +2,27 @@ import { CreateComponentType } from '@/packages/index.d'
 import type { ExposedMethodType } from '@/packages/index.d'
 import { commonExposedMethodEnum, commonExposedMethodNames } from '@/enums/methodEnum'
 // @ts-ignore
-window.curComp = {}
+// window.curComp = {}
 export const useExposedMethod = (targetComponent: CreateComponentType | any, componentExposedMethods: Array<ExposedMethodType>) => {
     // @ts-ignore
-    window.curComp[targetComponent.id] = targetComponent
-    debugger
+    // window.curComp[targetComponent.id] = targetComponent
+    // debugger
 
-    const show = (id:any) => {
+    const show = (curComp) => {
         // @ts-ignore
-        return window.curComp[id].attr.initializedVisible = true
+        return curComp.attr.initializedVisible = true
     }
 
-    const hide = () => {
+    // @ts-ignore
+    const hide = (curComp) => {
         // @ts-ignore
-        return window.curComp[id].attr.initializedVisible = false
+        return curComp.attr.initializedVisible = false
     }
 
     const componentExposed = componentExposedMethods.reduce((rtn, item) => ({
-        ...rtn, 
+        ...rtn,
         [item.value]: item.handler,
-    }), {} as {[key: string]: Function})
+    }), {} as { [key: string]: Function })
 
     return {
         [commonExposedMethodEnum.SHOW]: show,

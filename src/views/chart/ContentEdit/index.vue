@@ -59,6 +59,7 @@
                   :themeColor="themeColor"
                   :style="{
                     ...useSizeStyle(item.attr),
+                    ...useVisibleStyle(item.attr),
                     ...getFilterStyle(item.styles),
                     ...getTransformStyle(item.styles)
                   }"
@@ -103,7 +104,7 @@ import { useLayout } from './hooks/useLayout.hook'
 import { useAddKeyboard } from '../hooks/useKeyboard.hook'
 import { useSync } from '../hooks/useSync.hook'
 import { dragHandle, dragoverHandle, mousedownHandleUnStop, useMouseHandle } from './hooks/useDrag.hook'
-import { useComponentStyle, useSizeStyle } from './hooks/useStyle.hook'
+import { useComponentStyle, useSizeStyle, useVisibleStyle } from './hooks/useStyle.hook'
 
 import { ContentBox } from '../ContentBox/index'
 import { EditGroup } from './components/EditGroup'

@@ -144,7 +144,6 @@
           <setting-item-box name="方法">
             <n-select
               size="tiny"
-              v-model:value="item.interactTabMethod[a.value]"
               @update:value="fnUpdateMethods($event, item.interactComponentId, a.value, item)"
               :options="fnExposedMethodOptions(item.interactComponentId)"
               clearable
@@ -212,15 +211,29 @@ const fnExposedPropOptions = (id: string | undefined): Array<ExposedPropType> =>
     ({...item, label: `${item.label} - ${item.value}`})
   )
 }
-const fnUpdateMethods = (e: MouseEvent, id: string | undefined, tab: string, item:any) => {
+
+const fnUpdateMethods = (e: MouseEvent, id: string | undefined, tab: string, item: any) => {
   if (!id) {
     return
   }
   const instance = chartInstanceStore.getComponentInstance(id)
-  if (!item.interactTabs[tab]) {
-    item.interactTabs[tab] = []
+  //@ts-ignore
+  if (!targetData.value.option.interactTabs[tab]) {
+    //@ts-ignore
+    targetData.value.option.interactTabs[tab] = []
   }
-  item.interactTabs[tab].push(instance?.exposed?.getExposedMethods?.())
+  //@ts-ignore
+  targetData.value.option.interactTabs[tab].push({
+    id,
+    methods: instance?.exposed?.getExposedMethods?.()
+  })
+  if(item.interactTabMethod[tab]) {
+    item.interactTabMethod[tab][id] = e
+  } else {
+    item.interactTabMethod[tab] = {
+      [id]: e
+    }
+  }
 }
 const fnExposedMethodOptions = (id: string | undefined): Array<ExposedMethodType> => {
   if (!id) {
@@ -309,11 +322,15 @@ const fnEventsOptions = (): Array<SelectOption | SelectGroupOption> => {
 
 // 新增模块
 const evAddEventsFn = () => {
+  let interactTabMethod:any = {}
+  for (let i in readonlyExposedProps) {
+    //@ts-ignore
+    interactTabMethod[i.value] = {}
+  } 
   targetData.value.events.interactEvents.push({
     interactOn: undefined,
-    interactComponentId: undefined,
-    interactTabs: {},
-    interactTabMethod: {},
+    interactComponentId: "",
+    interactTabMethod,
     interactFn: {},
     interactProp: {},
     interactMethod: {}

@@ -171,11 +171,13 @@ export interface PublicConfigType {
     }
     interactEvents: {
       [InteractEvents.INTERACT_ON]: InteractEventOn | undefined
-      [InteractEvents.INTERACT_COMPONENT_ID]: string | undefined
+      [InteractEvents.INTERACT_COMPONENT_ID]: string
       [InteractEvents.INTERACT_FN]: { [name: string]: string }
       [InteractEvents.INTERACT_TABS]: {},
       [InteractEvents.INTERACT_TAB_METHOD]: {
-        [tab: string]: string
+        [tab: string]: {
+          [id: string]: string
+        }
       }
       [InteractEvents.INTERACT_PROP]: { [prop: string]: string, [handler: string]: string }
       [InteractEvents.INTERACT_METHOD]: { [method: string]: string, [handler: string]: string }

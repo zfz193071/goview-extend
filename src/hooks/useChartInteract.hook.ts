@@ -96,14 +96,15 @@ export const useChartInteract = (
       }
     }
     // @ts-ignore
-    const tabKeys = Object.keys(item.interactTabs)
+    const tabKeys = Object.keys(chartConfig.option.interactTabs)
     if (tabKeys.length) {
-      const chosenIndex = tabKeys.findIndex(a => param.data)
+      const chosenIndex = tabKeys.findIndex(a => param.data == a)
       // @ts-ignore
-      const methods = item.interactTabs[tabKeys[chosenIndex]][0]
-      const targetMethod = methods.find((x: ExposedMethodType) => x.value === item.interactTabMethod[tabKeys[chosenIndex]])
+      const methodsArr = chartConfig.option.interactTabs[tabKeys[chosenIndex]]
+      const methods = methodsArr.find((a: any) => a.id == item.interactComponentId)
+      const targetMethod = methods.methods.find((x: ExposedMethodType) =>
+         x.value === item.interactTabMethod[tabKeys[chosenIndex]][item.interactComponentId])
       // @ts-ignore
-      debugger
       targetMethod.handler.call(null, component)
     } else {
       const methods = instance.exposed?.getExposedMethods()

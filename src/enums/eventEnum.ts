@@ -17,7 +17,6 @@ export enum InteractEvents {
   INTERACT_FN = 'interactFn',
   INTERACT_PROP = 'interactProp',
   INTERACT_METHOD = 'interactMethod',
-  INTERACT_TABS = 'interactTabs',
   INTERACT_TAB_METHOD = 'interactTabMethod'
 }
 

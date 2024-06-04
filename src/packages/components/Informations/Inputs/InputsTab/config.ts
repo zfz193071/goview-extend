@@ -11,6 +11,7 @@ export const option = {
   [COMPONENT_INTERACT_EVENT_KET]: ComponentInteractEventEnum.DATA,
   // 默认值
   tabLabel: '选项1',
+  interactTabs: {},
   // 样式
   tabType: 'segment',
   // 暴露配置内容给用户
